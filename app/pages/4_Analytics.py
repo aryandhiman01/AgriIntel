@@ -13,6 +13,7 @@ from utils.charts import (
     create_scatter_chart,
     create_donut_chart,
     create_horizontal_bar,
+    create_box_plot,
 )
 
 # ==========================================================
@@ -164,42 +165,43 @@ left,right = st.columns(2)
 
 with left:
 
-    fig = create_histogram(
+    fig = create_box_plot(
 
         df,
 
-        x="avg_temp_c",
+        x="Season",
 
-        title="Temperature Distribution"
+        y="avg_temp_c",
+
+        color="Season",
+
+        title="Temperature by Season"
 
     )
 
     st.plotly_chart(
-
         fig,
-
         use_container_width=True
-
     )
 
 with right:
 
-    fig = create_histogram(
+    rain = (
+        df.groupby("Season", as_index=False)
+        .agg({"total_rainfall_mm":"mean"})
+    )
 
-        df,
-
-        x="total_rainfall_mm",
-
-        title="Rainfall Distribution"
-
+    fig = create_bar_chart(
+        rain,
+        x="Season",
+        y="total_rainfall_mm",
+        color="total_rainfall_mm",
+        title="Average Rainfall by Season"
     )
 
     st.plotly_chart(
-
         fig,
-
         use_container_width=True
-
     )
 
 st.write("")
@@ -208,22 +210,24 @@ left,right = st.columns(2)
 
 with left:
 
-    fig = create_histogram(
+    humidity = (
+        df.groupby("State", as_index=False)
+        .agg({"avg_humidity_percent":"mean"})
+        .sort_values("avg_humidity_percent", ascending=False)
+        .head(10)
+    )
 
-        df,
-
-        x="avg_humidity_percent",
-
-        title="Humidity Distribution"
-
+    fig = create_bar_chart(
+        humidity,
+        x="State",
+        y="avg_humidity_percent",
+        color="avg_humidity_percent",
+        title="Top 10 Humid States"
     )
 
     st.plotly_chart(
-
         fig,
-
         use_container_width=True
-
     )
 
 with right:
