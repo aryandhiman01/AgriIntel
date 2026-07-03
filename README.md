@@ -174,6 +174,35 @@ python -m streamlit run app/app.py
 
 ---
 
+## 📂 Dataset
+
+The original dataset is not included in this repository due to its size.
+
+You can use your own agricultural dataset by placing it in the following directory:
+
+```text
+data/final/master_dataset_recommendation.csv
+```
+
+The dataset should contain the required features used throughout the project, such as:
+
+- State
+- District
+- Crop
+- Season
+- Area
+- Production
+- Yield
+- Weather Features
+- Soil Features
+- Predicted_Yield
+- Recommendation
+- Priority
+
+After placing the dataset in the above location, the Streamlit application will work properly.
+
+---
+
 ## 📸 Dashboard Preview
 
 Add screenshots for:
