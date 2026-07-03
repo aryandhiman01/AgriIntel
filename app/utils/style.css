@@ -1,0 +1,393 @@
+/* ==========================================================
+   AgriIntel Dashboard Theme
+========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+html,
+body,
+[class*="css"] {
+
+    font-family: 'Inter', sans-serif;
+
+}
+
+
+/* ==========================================================
+   Background
+========================================================== */
+
+.stApp{
+
+    background:#08111F;
+
+}
+
+
+/* ==========================================================
+   Main Container
+========================================================== */
+
+.block-container{
+
+    padding-top:2rem;
+
+    padding-left:2rem;
+
+    padding-right:2rem;
+
+    padding-bottom:2rem;
+
+}
+
+
+/* ==========================================================
+   Sidebar
+========================================================== */
+
+[data-testid="stSidebar"]{
+
+    background:#0D1728;
+
+    border-right:1px solid rgba(255,255,255,.08);
+
+}
+
+
+/* ==========================================================
+   Sidebar Header
+========================================================== */
+
+[data-testid="stSidebar"] h1{
+
+    color:#59E390;
+
+    font-weight:800;
+
+}
+
+
+/* ==========================================================
+   Headings
+========================================================== */
+
+h1{
+
+    color:white;
+
+    font-weight:800;
+
+}
+
+h2{
+
+    color:white;
+
+}
+
+h3{
+
+    color:#73B7FF;
+
+}
+
+
+/* ==========================================================
+   Metric Cards
+========================================================== */
+
+[data-testid="metric-container"]{
+
+    background:#132238;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    transition:.35s;
+
+    box-shadow:
+
+    0px 10px 25px rgba(0,0,0,.25);
+
+}
+
+
+[data-testid="metric-container"]:hover{
+
+    transform:translateY(-6px);
+
+    border:1px solid #59E390;
+
+}
+
+
+/* ==========================================================
+   Buttons
+========================================================== */
+
+.stButton>button{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#2ECC71;
+
+    color:white;
+
+    font-weight:700;
+
+    padding:.7rem;
+
+    transition:.3s;
+
+}
+
+
+.stButton>button:hover{
+
+    background:#27AE60;
+
+}
+
+
+/* ==========================================================
+   Download Button
+========================================================== */
+
+.stDownloadButton>button{
+
+    width:100%;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+}
+
+
+/* ==========================================================
+   DataFrame
+========================================================== */
+
+[data-testid="stDataFrame"]{
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+
+/* ==========================================================
+   Selectbox
+========================================================== */
+
+div[data-baseweb="select"]{
+
+    background:#132238;
+
+    border-radius:10px;
+
+}
+
+
+/* ==========================================================
+   Divider
+========================================================== */
+
+hr{
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+
+/* ==========================================================
+   Alert Boxes
+========================================================== */
+
+.stAlert{
+
+    border-radius:15px;
+
+}
+
+
+/* ==========================================================
+   Plotly
+========================================================== */
+
+.js-plotly-plot{
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+}
+
+
+/* ==========================================================
+   Scrollbar
+========================================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#08111F;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#2ECC71;
+
+    border-radius:20px;
+
+}
+
+
+/* ==========================================================
+   Footer
+========================================================== */
+
+footer{
+
+    visibility:hidden;
+
+}
+
+header{
+
+    visibility:hidden;
+
+}
+
+
+/* ==========================================================
+   Custom Card
+========================================================== */
+
+.card{
+
+    background:#132238;
+
+    padding:22px;
+
+    border-radius:18px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+
+}
+
+
+/* ==========================================================
+   Hero Section
+========================================================== */
+
+.hero{
+
+    background:linear-gradient(
+
+        135deg,
+
+        #132238,
+
+        #0D1728
+
+    );
+
+    padding:35px;
+
+    border-radius:20px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+
+.hero h1{
+
+    font-size:42px;
+
+    color:white;
+
+}
+
+.hero p{
+
+    color:#D6E4F0;
+
+}
+
+
+/* ==========================================================
+   KPI Title
+========================================================== */
+
+.metric-title{
+
+    color:#9FB3C8;
+
+    font-size:14px;
+
+}
+
+
+.metric-value{
+
+    color:white;
+
+    font-size:34px;
+
+    font-weight:800;
+
+}
+
+
+/* ==========================================================
+   Success Badge
+========================================================== */
+
+.badge{
+
+    background:#2ECC71;
+
+    color:white;
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+}
+
+
+/* ==========================================================
+   Responsive
+========================================================== */
+
+@media(max-width:900px){
+
+.block-container{
+
+padding:1rem;
+
+}
+
+}
