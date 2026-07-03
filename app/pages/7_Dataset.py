@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from io import BytesIO
 
 from utils.load_data import load_data
 from utils.sidebar import sidebar_filters
@@ -240,9 +241,11 @@ st.divider()
 
 st.header("📋 Dataset Preview")
 
+MAX_ROWS = 500
+
 st.dataframe(
 
-    filtered,
+    filtered.head(MAX_ROWS),
 
     use_container_width=True,
 
@@ -252,13 +255,19 @@ st.dataframe(
 
 )
 
+st.caption(
+
+    f"Showing first {MAX_ROWS} rows out of {len(filtered):,} records."
+
+)
+
 st.divider()
 
 # ==========================================================
 # DOWNLOAD
 # ==========================================================
 
-left,right = st.columns(2)
+left, right = st.columns(2)
 
 with left:
 
@@ -276,17 +285,33 @@ with left:
 
 with right:
 
+    buffer = BytesIO()
+
+    filtered.to_excel(
+
+        buffer,
+
+        index=False,
+
+        engine="openpyxl"
+
+    )
+
+    buffer.seek(0)
+
     st.download_button(
 
         "⬇ Download Excel",
 
-        filtered.to_excel(index=False),
+        data=buffer,
 
-        file_name="AgriIntel_Dataset.xlsx"
+        file_name="AgriIntel_Dataset.xlsx",
+
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
 
-    # ==========================================================
+# ==========================================================
 # DATASET HEALTH
 # ==========================================================
 

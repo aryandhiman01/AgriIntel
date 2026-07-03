@@ -793,3 +793,144 @@ def create_strip_plot(
         title
 
     )
+
+
+# ==========================================================
+# SCATTER CHART
+# ==========================================================
+
+def create_scatter_chart(
+    df,
+    x,
+    y,
+    color=None,
+    size=None,
+    title=""
+):
+
+    fig = px.scatter(
+
+        df,
+
+        x=x,
+
+        y=y,
+
+        color=color,
+
+        size=size,
+
+        template="plotly_dark",
+
+        title=title,
+
+        height=500
+
+    )
+
+    fig.update_layout(
+
+        paper_bgcolor="rgba(0,0,0,0)",
+
+        plot_bgcolor="rgba(0,0,0,0)",
+
+        title_x=0.02,
+
+        margin=dict(
+            l=20,
+            r=20,
+            t=50,
+            b=20
+        )
+
+    )
+
+    return fig
+
+
+# ==========================================================
+# GROUPED BAR CHART
+# ==========================================================
+
+def create_grouped_bar(
+    data,
+    x,
+    y,
+    color,
+    title
+):
+
+    fig = px.bar(
+
+        data,
+
+        x=x,
+
+        y=y,
+
+        color=color,
+
+        barmode="group",
+
+        text_auto=".2s",
+
+        template="plotly_dark"
+
+    )
+
+    fig.update_traces(
+
+        marker_line_width=0
+
+    )
+
+    fig.update_layout(
+
+        title={
+            "text": title,
+            "x": 0.03
+        },
+
+        paper_bgcolor=BACKGROUND,
+
+        plot_bgcolor=BACKGROUND,
+
+        font=dict(
+            color=FONT,
+            family="Inter"
+        ),
+
+        margin=dict(
+            l=25,
+            r=25,
+            t=60,
+            b=25
+        ),
+
+        legend=dict(
+            bgcolor="rgba(0,0,0,0)"
+        )
+
+    )
+
+    fig.update_xaxes(
+
+        showgrid=True,
+
+        gridcolor=GRID,
+
+        zeroline=False
+
+    )
+
+    fig.update_yaxes(
+
+        showgrid=True,
+
+        gridcolor=GRID,
+
+        zeroline=False
+
+    )
+
+    return fig

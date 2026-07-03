@@ -4,7 +4,6 @@ import joblib
 
 from utils.load_data import load_data
 from utils.sidebar import sidebar_filters
-from utils.helper import format_yield
 
 # ==========================================================
 # PAGE CONFIG
@@ -12,7 +11,7 @@ from utils.helper import format_yield
 
 st.set_page_config(
 
-    page_title="Yield Prediction",
+    page_title="AI Yield Prediction",
 
     page_icon="🤖",
 
@@ -62,7 +61,7 @@ st.markdown("""
 
 <p style="font-size:18px">
 
-Predict future crop yield using our trained
+Predict agricultural yield using the trained
 Random Forest Machine Learning model.
 
 </p>
@@ -75,21 +74,21 @@ unsafe_allow_html=True)
 
 st.write("")
 
+# ==========================================================
+# INPUT SECTION
+# ==========================================================
+
 st.header("🌾 Crop Information")
 
-left,right = st.columns(2)
+col1, col2 = st.columns(2)
 
-with left:
+with col1:
 
     state = st.selectbox(
 
         "State",
 
-        sorted(
-
-            df["State"].unique()
-
-        )
+        sorted(df["State"].unique())
 
     )
 
@@ -97,25 +96,17 @@ with left:
 
         "Crop",
 
-        sorted(
-
-            df["Crop"].unique()
-
-        )
+        sorted(df["Crop"].unique())
 
     )
 
-with right:
+with col2:
 
     season = st.selectbox(
 
         "Season",
 
-        sorted(
-
-            df["Season"].unique()
-
-        )
+        sorted(df["Season"].unique())
 
     )
 
@@ -133,15 +124,19 @@ with right:
 
 st.divider()
 
+# ==========================================================
+# WEATHER
+# ==========================================================
+
 st.header("🌦 Weather Conditions")
 
-c1,c2,c3 = st.columns(3)
+c1, c2, c3 = st.columns(3)
 
 with c1:
 
     temperature = st.number_input(
 
-        "Temperature (°C)",
+        "Average Temperature (°C)",
 
         value=26.0,
 
@@ -153,7 +148,7 @@ with c2:
 
     rainfall = st.number_input(
 
-        "Rainfall (mm)",
+        "Total Rainfall (mm)",
 
         value=1200.0,
 
@@ -165,7 +160,7 @@ with c3:
 
     humidity = st.number_input(
 
-        "Humidity (%)",
+        "Average Humidity (%)",
 
         value=75.0,
 
@@ -175,9 +170,13 @@ with c3:
 
 st.divider()
 
+# ==========================================================
+# SOIL
+# ==========================================================
+
 st.header("🌱 Soil Parameters")
 
-c1,c2,c3,c4 = st.columns(4)
+c1, c2, c3, c4 = st.columns(4)
 
 with c1:
 
@@ -223,6 +222,10 @@ with c4:
 
 st.divider()
 
+# ==========================================================
+# PREDICT BUTTON
+# ==========================================================
+
 predict = st.button(
 
     "🚀 Predict Crop Yield",
@@ -232,17 +235,17 @@ predict = st.button(
 )
 
 # ==========================================================
-# PREDICTION
+# MODEL INFERENCE
 # ==========================================================
 
 if predict:
 
-    # Encode categorical features
     state_encoded = encoders["State"].transform([state])[0]
+
     crop_encoded = encoders["Crop"].transform([crop])[0]
+
     season_encoded = encoders["Season"].transform([season])[0]
 
-    # Create input dataframe
     input_df = pd.DataFrame({
 
         "State":[state_encoded],
@@ -269,19 +272,21 @@ if predict:
 
     })
 
-    # Match training feature order
     input_df = input_df[feature_columns]
 
-    # Prediction
-    prediction = model.predict(input_df)[0]
+    prediction = float(
+
+        model.predict(input_df)[0]
+
+    )
 
     st.divider()
 
     st.header("📊 Prediction Result")
 
-    c1, c2, c3 = st.columns(3)
+    a, b, c = st.columns(3)
 
-    c1.metric(
+    a.metric(
 
         "🌾 Predicted Yield",
 
@@ -289,7 +294,7 @@ if predict:
 
     )
 
-    c2.metric(
+    b.metric(
 
         "📍 State",
 
@@ -297,7 +302,7 @@ if predict:
 
     )
 
-    c3.metric(
+    c.metric(
 
         "🌱 Crop",
 
@@ -306,6 +311,10 @@ if predict:
     )
 
     st.divider()
+
+        # ==========================================================
+    # YIELD STATUS
+    # ==========================================================
 
     if prediction >= 5:
 
@@ -339,17 +348,17 @@ if predict:
 
 ### 🤖 AI Prediction Summary
 
-Predicted Yield
+**Predicted Yield**
 
-➡ **{prediction:.2f} t/ha**
+➡ {prediction:.2f} t/ha
 
-Yield Status
+**Yield Status**
 
-➡ **{color} {status}**
+➡ {color} {status}
 
-Model
+**Machine Learning Model**
 
-➡ **Random Forest Regressor**
+➡ Random Forest Regressor
 
 """)
 
@@ -359,27 +368,31 @@ Model
 
 ### 📋 Input Summary
 
-State
+**State**
 
-➡ **{state}**
+➡ {state}
 
-Crop
+**Crop**
 
-➡ **{crop}**
+➡ {crop}
 
-Season
+**Season**
 
-➡ **{season}**
+➡ {season}
 
-Area
+**Area**
 
-➡ **{area:.2f} ha**
+➡ {area:.2f} ha
 
 """)
 
     st.divider()
 
-    st.header("📈 Feature Summary")
+        # ==========================================================
+    # FEATURE SUMMARY
+    # ==========================================================
+
+    st.header("🌱 Input Feature Summary")
 
     summary = pd.DataFrame({
 
@@ -433,7 +446,139 @@ Area
 
     st.divider()
 
-    result = pd.DataFrame({
+        # ==========================================================
+    # AI DECISION SUPPORT
+    # ==========================================================
+
+    st.header("🧠 AI Decision Support")
+
+    recommendations = []
+
+    if rainfall < 800:
+        recommendations.append("💧 Increase irrigation frequency.")
+
+    elif rainfall > 2000:
+        recommendations.append("🌧 Improve field drainage to avoid waterlogging.")
+
+    if temperature > 35:
+        recommendations.append("🌡 High temperature detected. Consider heat stress management.")
+
+    elif temperature < 15:
+        recommendations.append("❄ Low temperature detected. Protect crop from cold stress.")
+
+    if nitrogen < 50:
+        recommendations.append("🧪 Apply Nitrogen fertilizer.")
+
+    if phosphorus < 30:
+        recommendations.append("🌱 Apply Phosphorus fertilizer.")
+
+    if potassium < 40:
+        recommendations.append("🌾 Apply Potassium fertilizer.")
+
+    if ph < 5.5:
+        recommendations.append("🪨 Apply lime to increase soil pH.")
+
+    elif ph > 7.5:
+        recommendations.append("🧪 Reduce alkalinity using sulphur treatment.")
+
+    if prediction < 1:
+        recommendations.append("🚨 Very low yield expected. Immediate intervention required.")
+
+    elif prediction < 3:
+        recommendations.append("⚠ Improve irrigation and nutrient management.")
+
+    elif prediction < 5:
+        recommendations.append("✅ Crop health is acceptable. Continue monitoring.")
+
+    else:
+        recommendations.append("🏆 Excellent yield potential. Maintain current practices.")
+
+     # ==========================================================
+    # PRIORITY ENGINE
+    # ==========================================================
+
+    risk_score = 0
+
+    if prediction < 1:
+        risk_score += 3
+
+    elif prediction < 3:
+        risk_score += 2
+
+    if rainfall < 800 or rainfall > 2000:
+        risk_score += 1
+
+    if temperature > 35 or temperature < 15:
+        risk_score += 1
+
+    if nitrogen < 50:
+        risk_score += 1
+
+    if phosphorus < 30:
+        risk_score += 1
+
+    if potassium < 40:
+        risk_score += 1
+
+    if ph < 5.5 or ph > 7.5:
+        risk_score += 1
+
+    if risk_score >= 6:
+
+        priority = "🔴 Immediate Action Required"
+
+    elif risk_score >= 4:
+
+        priority = "🟠 High Priority"
+
+    elif risk_score >= 2:
+
+        priority = "🟡 Moderate Priority"
+
+    else:
+
+        priority = "🟢 Routine Monitoring"
+
+    
+        # ==========================================================
+    # DISPLAY RECOMMENDATIONS
+    # ==========================================================
+
+    left, right = st.columns(2)
+
+    with left:
+
+        st.subheader("🚨 Priority Level")
+
+        st.success(priority)
+
+    with right:
+
+        st.subheader("📈 Recommended Actions")
+
+        st.metric(
+
+            "Total",
+
+            len(recommendations)
+
+        )
+
+    st.subheader("🌾 AI Recommendations")
+
+    for item in recommendations:
+
+        st.write("•", item)
+
+    st.divider()
+
+        # ==========================================================
+    # PREDICTION REPORT
+    # ==========================================================
+
+    st.header("📋 Prediction Report")
+
+    report = pd.DataFrame({
 
         "State":[state],
 
@@ -441,138 +586,169 @@ Area
 
         "Season":[season],
 
-        "Area":[area],
+        "Area (ha)":[area],
 
-        "Predicted_Yield":[prediction]
+        "Temperature (°C)":[temperature],
+
+        "Rainfall (mm)":[rainfall],
+
+        "Humidity (%)":[humidity],
+
+        "Nitrogen":[nitrogen],
+
+        "Phosphorus":[phosphorus],
+
+        "Potassium":[potassium],
+
+        "Soil pH":[ph],
+
+        "Predicted Yield (t/ha)":[round(prediction,2)],
+
+        "Yield Status":[status],
+
+        "Priority":[priority]
 
     })
 
-    st.download_button(
+    st.dataframe(
 
-        "⬇ Download Prediction",
+        report,
 
-        result.to_csv(index=False),
+        use_container_width=True,
 
-        file_name="prediction.csv",
-
-        mime="text/csv"
+        hide_index=True
 
     )
 
-# ==========================================================
-# AI DECISION SUPPORT
-# ==========================================================
+    st.divider()
 
-st.header("🧠 AI Decision Support")
 
-recommendations = []
+        # ==========================================================
+    # RISK ANALYSIS
+    # ==========================================================
 
-# Rainfall
-if rainfall < 800:
-    recommendations.append("💧 Increase irrigation frequency.")
+    st.header("📈 Risk Analysis")
 
-elif rainfall > 2000:
-    recommendations.append("🌧 Improve field drainage to avoid waterlogging.")
+    c1, c2, c3 = st.columns(3)
 
-# Temperature
-if temperature > 35:
-    recommendations.append("🌡 Use heat stress management practices.")
+    c1.metric(
 
-elif temperature < 15:
-    recommendations.append("❄ Protect crops from cold stress.")
+        "Risk Score",
 
-# Nitrogen
-if nitrogen < 50:
-    recommendations.append("🧪 Apply Nitrogen fertilizer.")
+        risk_score
 
-# Phosphorus
-if phosphorus < 30:
-    recommendations.append("🌱 Apply Phosphorus fertilizer.")
+    )
 
-# Potassium
-if potassium < 40:
-    recommendations.append("🌾 Apply Potassium fertilizer.")
+    c2.metric(
 
-# Soil pH
-if ph < 5.5:
-    recommendations.append("🪨 Apply lime to increase soil pH.")
+        "Priority",
 
-elif ph > 7.5:
-    recommendations.append("🧪 Consider sulphur-based soil treatment.")
+        priority
 
-# Yield based advice
-if prediction < 1:
-    recommendations.append("🚨 Expected yield is very low. Immediate intervention is required.")
+    )
 
-elif prediction < 3:
-    recommendations.append("⚠ Improve nutrient and irrigation management.")
+    c3.metric(
 
-elif prediction < 5:
-    recommendations.append("✅ Crop condition is acceptable. Continue monitoring.")
-
-else:
-    recommendations.append("🏆 Excellent yield potential. Maintain current practices.")
-
-# ==========================================================
-# DISPLAY RECOMMENDATIONS
-# ==========================================================
-
-left, right = st.columns(2)
-
-with left:
-
-    st.subheader("🚨 Priority")
-
-    st.success(priority)
-
-with right:
-
-    st.subheader("📈 Total Recommendations")
-
-    st.metric(
-
-        "Actions",
+        "Recommendations",
 
         len(recommendations)
 
     )
 
-st.subheader("🌱 Recommended Actions")
+    st.divider()
 
-for rec in recommendations:
 
-    st.write("•", rec)
+        # ==========================================================
+    # RECOMMENDATION REPORT
+    # ==========================================================
 
-st.divider()
+    st.header("🌱 Recommendation Summary")
 
-# ==========================================================
-# PREDICTION REPORT
-# ==========================================================
+    recommendation_df = pd.DataFrame({
 
-report = pd.DataFrame({
+        "Recommendation":recommendations
 
-    "State":[state],
+    })
 
-    "Crop":[crop],
+    st.dataframe(
 
-    "Season":[season],
+        recommendation_df,
 
-    "Predicted_Yield":[round(prediction,2)],
+        use_container_width=True,
 
-    "Priority":[priority],
+        hide_index=True
 
-    "Recommendations":[" | ".join(recommendations)]
+    )
 
-})
+    st.divider()
 
-st.download_button(
 
-    "⬇ Download Prediction Report",
+        # ==========================================================
+    # DOWNLOAD REPORTS
+    # ==========================================================
 
-    report.to_csv(index=False),
+    report_csv = report.to_csv(
 
-    file_name="Prediction_Report.csv",
+        index=False
 
-    mime="text/csv"
+    )
 
-)
+    recommendation_csv = recommendation_df.to_csv(
+
+        index=False
+
+    )
+
+    left, right = st.columns(2)
+
+    with left:
+
+        st.download_button(
+
+            "⬇ Download Prediction Report",
+
+            report_csv,
+
+            file_name="Prediction_Report.csv",
+
+            mime="text/csv"
+
+        )
+
+    with right:
+
+        st.download_button(
+
+            "⬇ Download Recommendations",
+
+            recommendation_csv,
+
+            file_name="Recommendations.csv",
+
+            mime="text/csv"
+
+        )
+
+    st.divider()
+
+        # ==========================================================
+    # FINAL SUMMARY
+    # ==========================================================
+
+    st.success(f"""
+
+## ✅ Prediction Completed Successfully
+
+The Random Forest model estimated a crop yield of
+
+### 🌾 {prediction:.2f} t/ha
+
+Priority Level
+
+### {priority}
+
+Total Recommendations Generated
+
+### {len(recommendations)}
+
+""")

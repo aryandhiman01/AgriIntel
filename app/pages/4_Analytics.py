@@ -9,7 +9,10 @@ from utils.helper import (
 
 from utils.charts import (
     create_histogram,
-    create_bar_chart
+    create_bar_chart,
+    create_scatter_chart,
+    create_donut_chart,
+    create_horizontal_bar,
 )
 
 # ==========================================================
