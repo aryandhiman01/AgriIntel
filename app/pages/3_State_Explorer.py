@@ -3,6 +3,7 @@ import pandas as pd
 
 from utils.load_data import load_data
 from utils.sidebar import sidebar_filters
+
 from utils.helper import (
     format_number,
     format_yield
@@ -10,43 +11,44 @@ from utils.helper import (
 
 from utils.charts import *
 
-# ==========================================================
+
+# =====================================================
 # PAGE CONFIG
-# ==========================================================
+# =====================================================
 
 st.set_page_config(
 
-    page_title="Crop Explorer",
+    page_title="State Explorer",
 
-    page_icon="🌾",
+    page_icon="🏛",
 
     layout="wide"
 
 )
 
-# ==========================================================
+# =====================================================
 # LOAD DATA
-# ==========================================================
+# =====================================================
 
 df = load_data()
 
 df = sidebar_filters(df)
 
-# ==========================================================
-# PAGE HEADER
-# ==========================================================
+# =====================================================
+# HERO
+# =====================================================
 
 st.markdown("""
 
 <div class="hero">
 
-<h1>🌾 Crop Explorer</h1>
+<h1>🏛 State Explorer</h1>
 
 <p style="font-size:18px">
 
-Analyze production, yield, weather,
-soil health and recommendations
-for individual crops.
+Explore state level agricultural performance,
+crop distribution, weather intelligence,
+soil health and machine learning insights.
 
 </p>
 
@@ -54,193 +56,157 @@ for individual crops.
 
 """,
 
-unsafe_allow_html=True
-
-)
+unsafe_allow_html=True)
 
 st.write("")
 
-# ==========================================================
-# CROP SELECTION
-# ==========================================================
+# =====================================================
+# STATE
+# =====================================================
 
-crop = st.selectbox(
+state = st.selectbox(
 
-    "Select Crop",
+    "Select State",
 
     sorted(
 
-        df["Crop"]
-
-        .unique()
+        df["State"].unique()
 
     )
 
 )
 
-crop_df = df[
-    df["Crop"] == crop
+state_df = df[
+
+    df["State"] == state
+
 ]
 
-st.divider()
+# =====================================================
+# KPIs
+# =====================================================
 
-# ==========================================================
-# KPI VALUES
-# ==========================================================
+records = len(state_df)
 
-records = len(crop_df)
+districts = state_df["District"].nunique()
 
-states = crop_df["State"].nunique()
+crops = state_df["Crop"].nunique()
 
-districts = crop_df["District"].nunique()
+production = state_df["Production"].sum()
 
-production = crop_df["Production"].sum()
+yield_avg = state_df["Yield"].mean()
 
-yield_avg = crop_df["Yield"].mean()
+prediction = state_df["Predicted_Yield"].mean()
 
-prediction = crop_df["Predicted_Yield"].mean()
-
-priority = (
-
-    crop_df["Priority"]
-
-    .mode()[0]
-
-)
-
-# ==========================================================
-# KPI ROW
-# ==========================================================
+priority = state_df["Priority"].mode()[0]
 
 c1,c2,c3,c4 = st.columns(4)
 
-with c1:
+c1.metric(
 
-    st.metric(
+    "📄 Records",
 
-        "📄 Records",
+    format_number(records)
 
-        format_number(records)
+)
 
-    )
+c2.metric(
 
-with c2:
+    "🏙 Districts",
 
-    st.metric(
+    districts
 
-        "🏛 States",
+)
 
-        states
+c3.metric(
 
-    )
+    "🌾 Crops",
 
-with c3:
+    crops
 
-    st.metric(
+)
 
-        "🏙 Districts",
+c4.metric(
 
-        districts
+    "🚨 Priority",
 
-    )
+    priority
 
-with c4:
-
-    st.metric(
-
-        "🚨 Priority",
-
-        priority
-
-    )
+)
 
 c1,c2,c3 = st.columns(3)
 
-with c1:
+c1.metric(
 
-    st.metric(
+    "🌱 Production",
 
-        "🌱 Production",
+    format_number(
 
-        format_number(
-
-            production
-
-        )
+        production
 
     )
 
-with c2:
+)
 
-    st.metric(
+c2.metric(
 
-        "📈 Average Yield",
+    "📈 Avg Yield",
 
-        format_yield(
+    format_yield(
 
-            yield_avg
-
-        )
+        yield_avg
 
     )
 
-with c3:
+)
 
-    st.metric(
+c3.metric(
 
-        "🤖 Predicted Yield",
+    "🤖 Predicted Yield",
 
-        format_yield(
+    format_yield(
 
-            prediction
-
-        )
+        prediction
 
     )
+
+)
 
 st.divider()
-
-# ==========================================================
-# CROP PROFILE
-# ==========================================================
 
 left,right = st.columns([2,1])
 
 with left:
 
-    st.subheader("📘 Crop Profile")
+    st.subheader("📘 State Overview")
 
     st.info(
 
 f"""
 
-Crop Name
+State
 
-➡ **{crop}**
+➡ **{state}**
 
-Available Records
-
-➡ **{records:,}**
-
-Available States
-
-➡ **{states}**
-
-Available Districts
+Districts
 
 ➡ **{districts}**
 
-Recommendation Engine
+Available Crops
 
-➡ **Enabled**
+➡ **{crops}**
 
 Machine Learning
 
-➡ **Prediction Ready**
+➡ Enabled
+
+Recommendation Engine
+
+➡ Active
 
 """
 
-    )
+)
 
 with right:
 
@@ -254,125 +220,103 @@ Highest Priority
 
 ➡ **{priority}**
 
+Production
+
+➡ **{production:,.0f}**
+
 Average Yield
 
 ➡ **{yield_avg:.2f}**
 
-Predicted Yield
-
-➡ **{prediction:.2f}**
-
 """
 
-    )
+)
 
 st.divider()
-
-# ==========================================================
-# WEATHER SUMMARY
-# ==========================================================
 
 st.subheader("🌦 Weather Summary")
 
 a,b,c = st.columns(3)
 
-with a:
+a.metric(
 
-    st.metric(
+    "Temperature",
 
-        "Temperature",
+    f"{state_df['avg_temp_c'].mean():.2f} °C"
 
-        f"{crop_df['avg_temp_c'].mean():.2f} °C"
+)
 
-    )
+b.metric(
 
-with b:
+    "Rainfall",
 
-    st.metric(
+    f"{state_df['total_rainfall_mm'].mean():.2f} mm"
 
-        "Rainfall",
+)
 
-        f"{crop_df['total_rainfall_mm'].mean():.2f} mm"
+c.metric(
 
-    )
+    "Humidity",
 
-with c:
+    f"{state_df['avg_humidity_percent'].mean():.2f}%"
 
-    st.metric(
-
-        "Humidity",
-
-        f"{crop_df['avg_humidity_percent'].mean():.2f}%"
-
-    )
+)
 
 st.divider()
-
-# ==========================================================
-# SOIL SUMMARY
-# ==========================================================
 
 st.subheader("🌱 Soil Summary")
 
-s1,s2,s3,s4 = st.columns(4)
+a,b,c,d = st.columns(4)
 
-with s1:
+a.metric(
 
-    st.metric(
+    "Nitrogen",
 
-        "Nitrogen",
+    f"{state_df['N'].mean():.2f}"
 
-        f"{crop_df['N'].mean():.2f}"
+)
 
-    )
+b.metric(
 
-with s2:
+    "Phosphorus",
 
-    st.metric(
+    f"{state_df['P'].mean():.2f}"
 
-        "Phosphorus",
+)
 
-        f"{crop_df['P'].mean():.2f}"
+c.metric(
 
-    )
+    "Potassium",
 
-with s3:
+    f"{state_df['K'].mean():.2f}"
 
-    st.metric(
+)
 
-        "Potassium",
+d.metric(
 
-        f"{crop_df['K'].mean():.2f}"
+    "pH",
 
-    )
+    f"{state_df['pH'].mean():.2f}"
 
-with s4:
-
-    st.metric(
-
-        "Soil pH",
-
-        f"{crop_df['pH'].mean():.2f}"
-
-    )
+)
 
 st.divider()
 
 # ==========================================================
-# STATE WISE ANALYTICS
+# TOP CROPS & DISTRICTS
 # ==========================================================
 
-st.header("🏛 State-wise Crop Performance")
+st.header("🌾 Crop Performance")
 
 left, right = st.columns(2)
 
 with left:
 
-    state_production = (
+    crop_summary = (
 
-        crop_df
+        state_df
 
-        .groupby("State", as_index=False)
+        .groupby("Crop", as_index=False)
 
         .agg({
 
@@ -394,15 +338,15 @@ with left:
 
     fig = create_horizontal_bar(
 
-        state_production,
+        crop_summary,
 
         x="Production",
 
-        y="State",
+        y="Crop",
 
         color="Production",
 
-        title=f"Top 10 States Growing {crop}"
+        title="Top Producing Crops"
 
     )
 
@@ -416,67 +360,9 @@ with left:
 
 with right:
 
-    state_yield = (
+    district_summary = (
 
-        crop_df
-
-        .groupby("State", as_index=False)
-
-        .agg({
-
-            "Yield":"mean"
-
-        })
-
-        .sort_values(
-
-            "Yield",
-
-            ascending=False
-
-        )
-
-        .head(10)
-
-    )
-
-    fig = create_bar_chart(
-
-        state_yield,
-
-        x="State",
-
-        y="Yield",
-
-        color="Yield",
-
-        title="Highest Average Yield"
-
-    )
-
-    st.plotly_chart(
-
-        fig,
-
-        use_container_width=True
-
-    )
-
-st.divider()
-
-# ==========================================================
-# DISTRICT ANALYSIS
-# ==========================================================
-
-st.header("🏙 District Performance")
-
-left, right = st.columns(2)
-
-with left:
-
-    district = (
-
-        crop_df
+        state_df
 
         .groupby("District", as_index=False)
 
@@ -498,13 +384,13 @@ with left:
 
     )
 
-    fig = create_horizontal_bar(
+    fig = create_bar_chart(
 
-        district,
+        district_summary,
 
-        x="Production",
+        x="District",
 
-        y="District",
+        y="Production",
 
         color="Production",
 
@@ -520,11 +406,21 @@ with left:
 
     )
 
-with right:
+st.divider()
+
+# ==========================================================
+# SEASON ANALYSIS
+# ==========================================================
+
+st.header("📅 Season Analysis")
+
+left, right = st.columns(2)
+
+with left:
 
     season = (
 
-        crop_df
+        state_df
 
         .groupby("Season", as_index=False)
 
@@ -544,7 +440,45 @@ with right:
 
         values="Production",
 
-        title="Season Distribution"
+        title="Production by Season"
+
+    )
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+
+    )
+
+with right:
+
+    season_yield = (
+
+        state_df
+
+        .groupby("Season", as_index=False)
+
+        .agg({
+
+            "Yield":"mean"
+
+        })
+
+    )
+
+    fig = create_bar_chart(
+
+        season_yield,
+
+        x="Season",
+
+        y="Yield",
+
+        color="Yield",
+
+        title="Average Yield by Season"
 
     )
 
@@ -570,7 +504,7 @@ with left:
 
     fig = create_scatter_chart(
 
-        crop_df,
+        state_df,
 
         x="avg_temp_c",
 
@@ -594,7 +528,7 @@ with right:
 
     fig = create_scatter_chart(
 
-        crop_df,
+        state_df,
 
         x="total_rainfall_mm",
 
@@ -622,7 +556,7 @@ st.divider()
 
 st.header("🌱 Soil Analysis")
 
-soil = crop_df[
+soil = state_df[
     [
         "N",
         "P",
@@ -666,14 +600,14 @@ st.plotly_chart(
 st.divider()
 
 # ==========================================================
-# PRODUCTION TREND
+# YEARLY TREND
 # ==========================================================
 
-st.header("📈 Production Trend")
+st.header("📈 Production & Yield Trend")
 
 trend = (
 
-    crop_df
+    state_df
 
     .groupby("Start_Year", as_index=False)
 
@@ -741,11 +675,14 @@ st.divider()
 
 st.header("🤖 Machine Learning Prediction Summary")
 
+left, right = st.columns([2,1])
+
 prediction = (
 
-    crop_df[
+    state_df[
         [
-            "State",
+            "District",
+            "Crop",
             "Yield",
             "Predicted_Yield",
             "Prediction_Error",
@@ -763,8 +700,6 @@ prediction = (
 
 )
 
-left, right = st.columns([2,1])
-
 with left:
 
     st.dataframe(
@@ -781,33 +716,27 @@ with left:
 
 with right:
 
-    avg_actual = crop_df["Yield"].mean()
-
-    avg_pred = crop_df["Predicted_Yield"].mean()
-
-    avg_error = crop_df["Prediction_Error"].mean()
-
     st.metric(
 
-        "Actual Yield",
+        "Average Actual Yield",
 
-        f"{avg_actual:.2f}"
+        f"{state_df['Yield'].mean():.2f}"
 
     )
 
     st.metric(
 
-        "Predicted Yield",
+        "Average Predicted Yield",
 
-        f"{avg_pred:.2f}"
+        f"{state_df['Predicted_Yield'].mean():.2f}"
 
     )
 
     st.metric(
 
-        "Average Error",
+        "Average Prediction Error",
 
-        f"{avg_error:.2f}"
+        f"{state_df['Prediction_Error'].mean():.2f}"
 
     )
 
@@ -817,7 +746,7 @@ st.divider()
 # RECOMMENDATION ENGINE
 # ==========================================================
 
-st.header("🧠 Recommendation Engine")
+st.header("🧠 Recommendation Analytics")
 
 left, right = st.columns(2)
 
@@ -825,9 +754,7 @@ with left:
 
     recommendation = (
 
-        crop_df
-
-        ["Recommendation"]
+        state_df["Recommendation"]
 
         .value_counts()
 
@@ -871,9 +798,7 @@ with right:
 
     priority = (
 
-        crop_df
-
-        ["Priority"]
+        state_df["Priority"]
 
         .value_counts()
 
@@ -912,16 +837,16 @@ with right:
 st.divider()
 
 # ==========================================================
-# SMART INSIGHTS
+# BUSINESS INSIGHTS
 # ==========================================================
 
-st.header("💡 Crop Insights")
+st.header("💡 Business Insights")
 
-top_state = (
+top_crop = (
 
-    crop_df
+    state_df
 
-    .groupby("State")["Production"]
+    .groupby("Crop")["Production"]
 
     .sum()
 
@@ -931,7 +856,7 @@ top_state = (
 
 top_district = (
 
-    crop_df
+    state_df
 
     .groupby("District")["Production"]
 
@@ -941,17 +866,17 @@ top_district = (
 
 )
 
-best_yield = (
+highest_yield = (
 
-    crop_df["Yield"]
+    state_df["Yield"]
 
     .max()
 
 )
 
-best_prediction = (
+highest_prediction = (
 
-    crop_df["Predicted_Yield"]
+    state_df["Predicted_Yield"]
 
     .max()
 
@@ -965,11 +890,11 @@ with left:
 
 f"""
 
-### 🌾 Best Performing Region
+### 🏆 Best Performing Region
 
-Top State
+Top Crop
 
-➡ **{top_state}**
+➡ **{top_crop}**
 
 Top District
 
@@ -977,7 +902,7 @@ Top District
 
 Highest Yield
 
-➡ **{best_yield:.2f}**
+➡ **{highest_yield:.2f}**
 
 """
 
@@ -989,19 +914,19 @@ with right:
 
 f"""
 
-### 🤖 Prediction Summary
+### 🤖 ML Summary
 
-Maximum Predicted Yield
+Highest Predicted Yield
 
-➡ **{best_prediction:.2f}**
+➡ **{highest_prediction:.2f}**
+
+Prediction Engine
+
+➡ Active
 
 Recommendation Engine
 
-➡ **Active**
-
-Priority Analysis
-
-➡ **Completed**
+➡ Active
 
 """
 
@@ -1013,11 +938,11 @@ st.divider()
 # DATASET
 # ==========================================================
 
-st.header("📋 Crop Dataset")
+st.header("📋 State Dataset")
 
 st.dataframe(
 
-    crop_df,
+    state_df,
 
     use_container_width=True,
 
@@ -1027,21 +952,23 @@ st.dataframe(
 
 )
 
+st.divider()
+
 # ==========================================================
-# DOWNLOAD
+# DOWNLOAD REPORT
 # ==========================================================
 
 st.download_button(
 
-    "⬇ Download Crop Report",
+    "⬇ Download State Report",
 
-    crop_df.to_csv(
+    state_df.to_csv(
 
         index=False
 
     ),
 
-    file_name=f"{crop}_Report.csv",
+    file_name=f"{state}_Report.csv",
 
     mime="text/csv"
 

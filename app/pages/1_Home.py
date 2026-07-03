@@ -1,220 +1,395 @@
 import streamlit as st
-import plotly.express as px
 
-from utils.load_data import (
-    load_data,
-    filter_data,
-    get_states,
-    get_crops,
-    get_seasons,
-    get_kpis
-)
-
-from utils.helper import (
-    format_number,
-    format_yield
-)
+from utils.load_data import load_data
+from utils.sidebar import sidebar_filters
+from utils.helper import format_number, format_yield
 
 
-# ======================================================
+# ==========================================================
 # PAGE CONFIG
-# ======================================================
+# ==========================================================
 
 st.set_page_config(
 
-    page_title="Home",
+    page_title="AgriIntel",
 
-    page_icon="🏠",
+    page_icon="🌾",
 
     layout="wide"
 
 )
 
 
-# ======================================================
+# ==========================================================
 # LOAD DATA
-# ======================================================
+# ==========================================================
 
 df = load_data()
 
+df = sidebar_filters(df)
 
-# ======================================================
-# SIDEBAR FILTERS
-# ======================================================
 
-st.sidebar.header("Filters")
+# ==========================================================
+# HERO
+# ==========================================================
 
-state = st.sidebar.selectbox(
+st.markdown("""
 
-    "State",
+<div class="hero">
 
-    get_states(df)
+<h1>🌾 AgriIntel</h1>
 
-)
+<p style="font-size:20px;">
 
-crop = st.sidebar.selectbox(
+Agriculture Intelligence & Decision Support Platform
 
-    "Crop",
+</p>
 
-    get_crops(df)
+<p>
 
-)
+Analyze crop production, monitor weather & soil conditions,
 
-season = st.sidebar.selectbox(
+predict yield using Machine Learning and generate intelligent
 
-    "Season",
+recommendations for better agricultural decisions.
 
-    get_seasons(df)
+</p>
 
-)
+</div>
 
-filtered = filter_data(
+""",
 
-    df,
-
-    state,
-
-    crop,
-
-    season
+unsafe_allow_html=True
 
 )
 
+st.write("")
 
-# ======================================================
-# TITLE
-# ======================================================
 
-st.title("🌾 AgriIntel Dashboard")
+# ==========================================================
+# KPI VALUES
+# ==========================================================
 
-st.caption(
-    "Agriculture Intelligence & Decision Support Platform"
-)
+records = len(df)
+
+states = df["State"].nunique()
+
+districts = df["District"].nunique()
+
+crops = df["Crop"].nunique()
+
+production = df["Production"].sum()
+
+yield_avg = df["Yield"].mean()
+
+prediction_avg = df["Predicted_Yield"].mean()
+
+recommendations = df["Recommendation"].nunique()
+
+
+# ==========================================================
+# KPI ROW 1
+# ==========================================================
+
+c1,c2,c3,c4 = st.columns(4)
+
+with c1:
+
+    st.metric(
+
+        "📄 Records",
+
+        format_number(records)
+
+    )
+
+with c2:
+
+    st.metric(
+
+        "🏛 States",
+
+        states
+
+    )
+
+with c3:
+
+    st.metric(
+
+        "🏙 Districts",
+
+        districts
+
+    )
+
+with c4:
+
+    st.metric(
+
+        "🌾 Crops",
+
+        crops
+
+    )
+
+
+# ==========================================================
+# KPI ROW 2
+# ==========================================================
+
+c1,c2,c3,c4 = st.columns(4)
+
+with c1:
+
+    st.metric(
+
+        "🌱 Production",
+
+        format_number(production)
+
+    )
+
+with c2:
+
+    st.metric(
+
+        "📈 Avg Yield",
+
+        format_yield(yield_avg)
+
+    )
+
+with c3:
+
+    st.metric(
+
+        "🤖 Predicted Yield",
+
+        format_yield(prediction_avg)
+
+    )
+
+with c4:
+
+    st.metric(
+
+        "🧠 Recommendations",
+
+        recommendations
+
+    )
+
 
 st.divider()
 
 
-# ======================================================
-# KPIs
-# ======================================================
+# ==========================================================
+# QUICK OVERVIEW
+# ==========================================================
 
-kpi = get_kpis(filtered)
-
-c1,c2,c3 = st.columns(3)
-
-c4,c5,c6 = st.columns(3)
-
-
-c1.metric(
-
-    "📄 Records",
-
-    format_number(
-
-        kpi["records"]
-
-    )
-
-)
-
-c2.metric(
-
-    "🏛 States",
-
-    kpi["states"]
-
-)
-
-c3.metric(
-
-    "🌾 Crops",
-
-    kpi["crops"]
-
-)
-
-c4.metric(
-
-    "🌱 Total Production",
-
-    format_number(
-
-        kpi["production"]
-
-    )
-
-)
-
-c5.metric(
-
-    "📈 Avg Yield",
-
-    format_yield(
-
-        kpi["avg_yield"]
-
-    )
-
-)
-
-c6.metric(
-
-    "🤖 Avg Prediction",
-
-    format_yield(
-
-        kpi["avg_prediction"]
-
-    )
-
-)
-
-st.divider()
-
-
-# ======================================================
-# ROW 1
-# ======================================================
-
-left,right = st.columns(2)
+left,right = st.columns([2,1])
 
 with left:
 
-    production = (
+    st.subheader("📘 Project Overview")
 
-        filtered
+    st.info(
 
-        .groupby("State")["Production"]
+        """
 
-        .sum()
+AgriIntel combines
 
-        .sort_values(ascending=False)
+• Agricultural Production Analytics
 
-        .head(10)
+• Weather Intelligence
 
-        .reset_index()
+• Soil Intelligence
+
+• Machine Learning Prediction
+
+• Recommendation Engine
+
+• Business Intelligence
+
+into one interactive analytics platform.
+
+"""
 
     )
 
-    fig = px.bar(
+with right:
 
-        production,
+    st.subheader("⚡ Dataset Status")
+
+    st.success(
+
+f"""
+
+✔ Records : {records:,}
+
+✔ States : {states}
+
+✔ Districts : {districts}
+
+✔ Crops : {crops}
+
+✔ Prediction Ready
+
+✔ Recommendation Ready
+
+"""
+
+    )
+
+
+st.divider()
+
+
+# ==========================================================
+# QUICK STATS
+# ==========================================================
+
+st.subheader("📊 Quick Statistics")
+
+a,b,c = st.columns(3)
+
+with a:
+
+    st.metric(
+
+        "Average Temperature",
+
+        f"{df['avg_temp_c'].mean():.2f} °C"
+
+    )
+
+with b:
+
+    st.metric(
+
+        "Average Rainfall",
+
+        f"{df['total_rainfall_mm'].mean():.2f} mm"
+
+    )
+
+with c:
+
+    st.metric(
+
+        "Average Humidity",
+
+        f"{df['avg_humidity_percent'].mean():.2f}%"
+
+    )
+
+
+st.divider()
+
+
+# ==========================================================
+# DATA PREVIEW
+# ==========================================================
+
+st.subheader("🗂 Dataset Preview")
+
+preview = df[
+
+    [
+
+        "State",
+
+        "District",
+
+        "Crop",
+
+        "Season",
+
+        "Production",
+
+        "Yield",
+
+        "Predicted_Yield",
+
+        "Priority"
+
+    ]
+
+].head(15)
+
+st.dataframe(
+
+    preview,
+
+    use_container_width=True,
+
+    hide_index=True
+
+)
+
+
+st.download_button(
+
+    "⬇ Download Filtered Dataset",
+
+    df.to_csv(index=False),
+
+    "AgriIntel_Filtered.csv",
+
+    "text/csv"
+
+)
+
+# ==========================================================
+# ANALYTICS DASHBOARD
+# ==========================================================
+
+st.divider()
+
+st.header("📊 Agriculture Analytics")
+
+col1, col2 = st.columns(2)
+
+# ==========================================================
+# TOP STATES
+# ==========================================================
+
+with col1:
+
+    state_summary = (
+
+        df.groupby("State", as_index=False)
+
+        .agg({
+
+            "Production":"sum"
+
+        })
+
+        .sort_values(
+
+            "Production",
+
+            ascending=False
+
+        )
+
+        .head(10)
+
+    )
+
+    fig = create_horizontal_bar(
+
+        state_summary,
 
         x="Production",
 
         y="State",
 
-        orientation="h",
-
         color="Production",
 
-        title="Top Production States"
-
-    )
-
-    fig.update_layout(
-
-        height=500
+        title="Top 10 States by Production"
 
     )
 
@@ -226,27 +401,37 @@ with left:
 
     )
 
-with right:
+# ==========================================================
+# TOP CROPS
+# ==========================================================
 
-    crops = (
+with col2:
 
-        filtered
+    crop_summary = (
 
-        .groupby("Crop")["Production"]
+        df.groupby("Crop", as_index=False)
 
-        .sum()
+        .agg({
 
-        .sort_values(ascending=False)
+            "Production":"sum"
+
+        })
+
+        .sort_values(
+
+            "Production",
+
+            ascending=False
+
+        )
 
         .head(10)
 
-        .reset_index()
-
     )
 
-    fig = px.bar(
+    fig = create_bar_chart(
 
-        crops,
+        crop_summary,
 
         x="Crop",
 
@@ -258,12 +443,6 @@ with right:
 
     )
 
-    fig.update_layout(
-
-        height=500
-
-    )
-
     st.plotly_chart(
 
         fig,
@@ -272,18 +451,19 @@ with right:
 
     )
 
+st.write("")
 
-# ======================================================
-# ROW 2
-# ======================================================
+col1, col2 = st.columns(2)
 
-left,right = st.columns(2)
+# ==========================================================
+# PRIORITY
+# ==========================================================
 
-with left:
+with col1:
 
     priority = (
 
-        filtered["Priority"]
+        df["Priority"]
 
         .value_counts()
 
@@ -299,15 +479,13 @@ with left:
 
     ]
 
-    fig = px.pie(
+    fig = create_donut_chart(
 
         priority,
 
         names="Priority",
 
         values="Count",
-
-        hole=.45,
 
         title="Priority Distribution"
 
@@ -321,11 +499,15 @@ with left:
 
     )
 
-with right:
+# ==========================================================
+# MANAGEMENT
+# ==========================================================
 
-    area = (
+with col2:
 
-        filtered["Management_Area"]
+    management = (
+
+        df["Management_Area"]
 
         .value_counts()
 
@@ -335,7 +517,7 @@ with right:
 
     )
 
-    area.columns=[
+    management.columns = [
 
         "Management",
 
@@ -343,9 +525,9 @@ with right:
 
     ]
 
-    fig = px.bar(
+    fig = create_bar_chart(
 
-        area,
+        management,
 
         x="Management",
 
@@ -365,38 +547,428 @@ with right:
 
     )
 
+st.write("")
 
-# ======================================================
-# DATA PREVIEW
-# ======================================================
+col1, col2 = st.columns(2)
+
+# ==========================================================
+# WEATHER
+# ==========================================================
+
+with col1:
+
+    weather = (
+
+        df.groupby(
+
+            "State",
+
+            as_index=False
+
+        )
+
+        .agg({
+
+            "avg_temp_c":"mean"
+
+        })
+
+        .sort_values(
+
+            "avg_temp_c",
+
+            ascending=False
+
+        )
+
+        .head(10)
+
+    )
+
+    fig = create_bar_chart(
+
+        weather,
+
+        x="State",
+
+        y="avg_temp_c",
+
+        color="avg_temp_c",
+
+        title="Highest Average Temperature"
+
+    )
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+
+    )
+
+# ==========================================================
+# RAINFALL
+# ==========================================================
+
+with col2:
+
+    rainfall = (
+
+        df.groupby(
+
+            "State",
+
+            as_index=False
+
+        )
+
+        .agg({
+
+            "total_rainfall_mm":"mean"
+
+        })
+
+        .sort_values(
+
+            "total_rainfall_mm",
+
+            ascending=False
+
+        )
+
+        .head(10)
+
+    )
+
+    fig = create_horizontal_bar(
+
+        rainfall,
+
+        x="total_rainfall_mm",
+
+        y="State",
+
+        color="total_rainfall_mm",
+
+        title="Highest Rainfall"
+
+    )
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+
+    )
 
 st.divider()
 
-st.subheader("Dataset Preview")
+st.header("📈 Production Trend")
 
-st.dataframe(
+trend = (
 
-    filtered,
+    df.groupby(
 
-    use_container_width=True,
+        "Start_Year",
 
-    height=450
+        as_index=False
+
+    )
+
+    .agg({
+
+        "Production":"sum"
+
+    })
+
+)
+
+fig = create_line_chart(
+
+    trend,
+
+    x="Start_Year",
+
+    y="Production",
+
+    title="Production Trend"
+
+)
+
+st.plotly_chart(
+
+    fig,
+
+    use_container_width=True
 
 )
 
 
-# ======================================================
-# DOWNLOAD
-# ======================================================
+# ==========================================================
+# BUSINESS INSIGHTS
+# ==========================================================
 
-st.download_button(
+st.divider()
 
-    "⬇ Download Filtered Dataset",
+st.header("💡 AI Powered Business Insights")
 
-    filtered.to_csv(index=False),
+top_state = (
+    df.groupby("State")["Production"]
+    .sum()
+    .idxmax()
+)
 
-    "Filtered_Dataset.csv",
+top_crop = (
+    df.groupby("Crop")["Production"]
+    .sum()
+    .idxmax()
+)
 
-    "text/csv"
+highest_yield = (
+    df.groupby("Crop")["Yield"]
+    .mean()
+    .idxmax()
+)
+
+high_priority = (
+    df["Priority"] == "High Priority"
+).sum()
+
+critical = (
+    df["Priority"] == "Immediate Action Required"
+).sum()
+
+c1, c2 = st.columns(2)
+
+with c1:
+
+    st.success(f"""
+
+### 🏆 Production Leader
+
+**State :** {top_state}
+
+**Top Crop :** {top_crop}
+
+**Highest Average Yield Crop :** {highest_yield}
+
+""")
+
+with c2:
+
+    st.warning(f"""
+
+### 🚨 Decision Summary
+
+High Priority Records : **{high_priority:,}**
+
+Immediate Action Required : **{critical:,}**
+
+Recommendation Engine : **Active**
+
+""")
+    
+# ==========================================================
+# WEATHER OVERVIEW
+# ==========================================================
+
+st.divider()
+
+st.header("🌦 Weather Intelligence")
+
+c1, c2, c3 = st.columns(3)
+
+c1.metric(
+
+    "🌡 Avg Temperature",
+
+    f"{df['avg_temp_c'].mean():.2f} °C"
 
 )
+
+c2.metric(
+
+    "🌧 Avg Rainfall",
+
+    f"{df['total_rainfall_mm'].mean():.2f} mm"
+
+)
+
+c3.metric(
+
+    "💧 Avg Humidity",
+
+    f"{df['avg_humidity_percent'].mean():.2f}%"
+
+)
+
+# ==========================================================
+# SOIL SUMMARY
+# ==========================================================
+
+st.divider()
+
+st.header("🌱 Soil Health")
+
+soil = df[
+    [
+
+        "N",
+
+        "P",
+
+        "K",
+
+        "pH"
+
+    ]
+
+].mean()
+
+soil_df = soil.reset_index()
+
+soil_df.columns = [
+
+    "Parameter",
+
+    "Average"
+
+]
+
+fig = create_bar_chart(
+
+    soil_df,
+
+    x="Parameter",
+
+    y="Average",
+
+    color="Average",
+
+    title="Average Soil Parameters"
+
+)
+
+st.plotly_chart(
+
+    fig,
+
+    use_container_width=True
+
+)
+
+# ==========================================================
+# MODEL SUMMARY
+# ==========================================================
+
+st.divider()
+
+st.header("🤖 Machine Learning Status")
+
+c1, c2, c3, c4 = st.columns(4)
+
+c1.metric(
+
+    "Model",
+
+    "Random Forest"
+
+)
+
+c2.metric(
+
+    "Prediction",
+
+    "Ready"
+
+)
+
+c3.metric(
+
+    "Recommendation",
+
+    "Active"
+
+)
+
+c4.metric(
+
+    "Dataset",
+
+    "Validated"
+
+)
+
+
+# ==========================================================
+# QUICK ACTIONS
+# ==========================================================
+
+st.divider()
+
+st.header("⚡ Quick Actions")
+
+a, b, c = st.columns(3)
+
+with a:
+
+    st.info("""
+
+📊 Explore Crop Analytics
+
+Navigate to Crop Explorer
+for detailed crop analysis.
+
+""")
+
+with b:
+
+    st.info("""
+
+🏛 Explore State Analytics
+
+Analyze state-wise
+agriculture performance.
+
+""")
+
+with c:
+
+    st.info("""
+
+🧠 Open Recommendation Engine
+
+View recommendations.
+
+""")
+    
+# ==========================================================
+# FEATURES
+# ==========================================================
+
+st.divider()
+
+st.header("🚀 Platform Features")
+
+st.markdown("""
+
+✅ Agricultural Production Analytics
+
+✅ Weather Intelligence
+
+✅ Soil Intelligence
+
+✅ Machine Learning Prediction
+
+✅ Recommendation Engine
+
+✅ Business Intelligence
+
+✅ Interactive Dashboard
+
+✅ Dataset Explorer
+
+""")
+
