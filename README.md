@@ -1,5 +1,6 @@
-
-# 🌾 AgriIntel — Agricultural Intelligence & Decision Support System
+<h1 align="center">
+  🌾 AgriIntel — Agricultural Intelligence & Decision Support System
+</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python&logoColor=yellow">
