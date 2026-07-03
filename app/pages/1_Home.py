@@ -4,6 +4,13 @@ from utils.load_data import load_data
 from utils.sidebar import sidebar_filters
 from utils.helper import format_number, format_yield
 
+from utils.charts import (
+    create_bar_chart,
+    create_horizontal_bar,
+    create_line_chart,
+    create_donut_chart
+)
+
 
 # ==========================================================
 # PAGE CONFIG
