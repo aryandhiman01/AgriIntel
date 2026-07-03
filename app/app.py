@@ -32,11 +32,13 @@ with open(css_path) as f:
 # SIDEBAR
 # --------------------------------------------------
 
+logo_path = Path(__file__).parent / "assets" / "logo.png"
+
 with st.sidebar:
 
     st.image(
 
-        "assets/logo.png",
+        str(logo_path),
 
         use_container_width=True
 
