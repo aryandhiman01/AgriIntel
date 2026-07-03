@@ -1,5 +1,5 @@
 
-# 🌾 AgriIntel — AI-Powered Agricultural Intelligence & Decision Support System
+# 🌾 AgriIntel — Agricultural Intelligence & Decision Support System
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python&logoColor=yellow">
@@ -14,7 +14,7 @@
 
 ## 🚀 Overview
 
-**AgriIntel** is an AI-powered Agricultural Intelligence & Decision Support System that combines data analytics, machine learning, and interactive visualization to transform agricultural data into actionable insights. The platform enables crop analysis, yield prediction, risk assessment, and intelligent farming recommendations through an interactive Streamlit dashboard.
+**AgriIntel** is an Agricultural Intelligence & Decision Support System that combines data analytics, machine learning, and interactive visualization to transform agricultural data into actionable insights. The platform enables crop analysis, yield prediction, risk assessment, and intelligent farming recommendations through an interactive Streamlit dashboard.
 
 ---
 
@@ -32,7 +32,7 @@
 - Real-time Inference
 
 ### 🧠 Recommendation Engine
-- AI-based Recommendations
+- Recommendations
 - Risk Assessment
 - Priority Classification
 
@@ -119,7 +119,7 @@ Interactive Dashboard
 | 🏛 State Explorer | State Analytics |
 | 📊 Analytics | Interactive Visualizations |
 | 🤖 Prediction | Crop Yield Prediction |
-| 🧠 Recommendation | AI Decision Support |
+| 🧠 Recommendation | Decision Support |
 | 📂 Dataset Explorer | Dataset Browser |
 
 ---
@@ -190,7 +190,7 @@ Add screenshots for:
 
 - End-to-End Data Science Pipeline
 - Machine Learning Based Crop Yield Prediction
-- AI-Powered Recommendation Engine
+- Recommendation Engine
 - Interactive Streamlit Dashboard
 - Modular Project Structure
 - Agricultural Decision Support System
