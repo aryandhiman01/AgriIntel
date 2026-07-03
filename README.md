@@ -174,32 +174,30 @@ python -m streamlit run app/app.py
 
 ---
 
-## 📂 Dataset
+## 📦 Dataset & Pre-trained Models
 
-The original dataset is not included in this repository due to its size.
+The dataset and pre-trained machine learning models are **not included** in this repository due to GitHub file size limitations.
 
-You can use your own agricultural dataset by placing it in the following directory:
+To run the project successfully:
+
+1. Place the dataset at:
 
 ```text
 data/final/master_dataset_recommendation.csv
 ```
 
-The dataset should contain the required features used throughout the project, such as:
+2. Place the trained model files inside:
 
-- State
-- District
-- Crop
-- Season
-- Area
-- Production
-- Yield
-- Weather Features
-- Soil Features
-- Predicted_Yield
-- Recommendation
-- Priority
+```text
+models/
+├── random_forest_model.pkl
+├── label_encoders.pkl
+└── feature_columns.pkl
+```
 
-After placing the dataset in the above location, the Streamlit application will work properly.
+Alternatively, you can generate both the dataset and trained models by running the notebooks provided in the `notebooks/` directory.
+
+Once the dataset and model files are available in the above locations, the Streamlit application will run properly.
 
 ---
 
