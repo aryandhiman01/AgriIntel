@@ -52,16 +52,6 @@ Agriculture Intelligence & Decision Support Platform
 
 </p>
 
-<p>
-
-Analyze crop production, monitor weather & soil conditions,
-
-predict yield using Machine Learning and generate intelligent
-
-recommendations for better agricultural decisions.
-
-</p>
-
 </div>
 
 """,
